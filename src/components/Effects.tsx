@@ -96,6 +96,18 @@ function drawFloat(ctx: CanvasRenderingContext2D, particle: Particle, festival: 
     ctx.beginPath()
     ctx.arc(0, 0, r * 0.7, 0, Math.PI * 2)
     ctx.fill()
+  } else if (festival === "thanksgiving") {
+    ctx.beginPath()
+    ctx.moveTo(0, -r)
+    ctx.bezierCurveTo(r * 0.7, -r * 0.2, r * 0.5, r * 0.9, 0, r)
+    ctx.bezierCurveTo(-r * 0.5, r * 0.9, -r * 0.7, -r * 0.2, 0, -r)
+    ctx.fill()
+  } else if (festival === "blackfriday") {
+    ctx.strokeRect(-r * 0.55, -r * 0.35, r * 1.1, r * 0.7)
+    ctx.beginPath()
+    ctx.moveTo(-r * 0.2, -r * 0.35)
+    ctx.lineTo(-r * 0.2, -r * 0.65)
+    ctx.stroke()
   } else {
     ctx.beginPath()
     ctx.moveTo(0, -r)

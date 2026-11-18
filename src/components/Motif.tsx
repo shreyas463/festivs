@@ -20,6 +20,37 @@ export function Motif({ id }: MotifProps) {
       </svg>
     )
   }
+  if (id === "thanksgiving") {
+    return (
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <path
+          fill="currentColor"
+          d="M32 6c-7 12-16 19-16 32a16 16 0 1 0 32 0c0-13-9-20-16-32z"
+        />
+        <path
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.2"
+          strokeLinecap="round"
+          d="M32 40v14M32 18v8"
+        />
+      </svg>
+    )
+  }
+  if (id === "blackfriday") {
+    return (
+      <svg viewBox="0 0 64 64" aria-hidden="true">
+        <path fill="currentColor" d="M16 20h32l8 22H8l8-22z" />
+        <path
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2.4"
+          strokeLinecap="round"
+          d="M22 42v12M42 42v12"
+        />
+      </svg>
+    )
+  }
   if (id === "christmas") {
     return (
       <svg viewBox="0 0 64 64" aria-hidden="true">

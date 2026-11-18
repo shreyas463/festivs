@@ -128,7 +128,8 @@ async function checkBehavior() {
       fail("an empty field was written")
     }
 
-    eq(season.nearestFestival(new Date(2026, 10, 17)), "diwali", "november 17")
+    eq(season.nearestFestival(new Date(2026, 10, 17)), "thanksgiving", "november 17")
+    eq(season.nearestFestival(new Date(2026, 10, 27)), "blackfriday", "black friday 2026")
     eq(season.nearestFestival(new Date(2026, 11, 20)), "christmas", "december 20")
     eq(season.nearestFestival(new Date(2026, 0, 1)), "newyear", "new year")
     eq(season.nearestFestival(new Date(2026, 1, 17)), "lunar", "lunar new year")

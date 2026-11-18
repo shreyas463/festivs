@@ -53,7 +53,6 @@ export function CardStage({ card, open, playId, canClose, onToggle }: CardStageP
   const scene = (
     <span className="card-scene">
       <span className="card-inside">
-        <span className="pop-ring" aria-hidden="true" />
         <span className="inside-mark" aria-hidden="true">
           <Motif id={festival.id} />
         </span>
@@ -65,9 +64,6 @@ export function CardStage({ card, open, playId, canClose, onToggle }: CardStageP
         <span className="face front">
           <span className="cover-frame" aria-hidden="true" />
           <span className="cover-body">
-            <span className="seal" aria-hidden="true">
-              <Motif id={festival.id} />
-            </span>
             <span className="eyebrow">For</span>
             <span className={nameClass}>{name}</span>
           </span>

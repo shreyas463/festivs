@@ -1,4 +1,12 @@
-export type FestivalId = "diwali" | "christmas" | "newyear" | "holi" | "eid" | "lunar"
+export type FestivalId =
+  | "diwali"
+  | "christmas"
+  | "newyear"
+  | "holi"
+  | "eid"
+  | "lunar"
+  | "thanksgiving"
+  | "blackfriday"
 
 export type Festival = {
   id: FestivalId
@@ -106,6 +114,36 @@ export const festivals: Festival[] = [
     night: "#2c0a0c",
     wash: "rgba(230, 60, 48, 0.45)",
     bits: ["#f0d06a", "#fff4d8", "#ff8b7a", "#fffaf2"],
+  },
+  {
+    id: "thanksgiving",
+    name: "Thanksgiving",
+    greeting: "Grateful for you today and always.",
+    ink: "#3a2210",
+    deep: "#8b3d1a",
+    accent: "#c85a28",
+    gold: "#e8c56b",
+    paper: "#fff8ef",
+    coverA: "#5c2e14",
+    coverB: "#c45a24",
+    night: "#1a1008",
+    wash: "rgba(200, 120, 40, 0.45)",
+    bits: ["#e8c56b", "#ffb15a", "#c45a24", "#fff4d8"],
+  },
+  {
+    id: "blackfriday",
+    name: "Black Friday",
+    greeting: "Hope you find something wonderful.",
+    ink: "#101018",
+    deep: "#1c1c2a",
+    accent: "#f5c518",
+    gold: "#f5c518",
+    paper: "#f4f4f6",
+    coverA: "#0a0a10",
+    coverB: "#2a2a38",
+    night: "#050508",
+    wash: "rgba(245, 197, 24, 0.35)",
+    bits: ["#f5c518", "#ffffff", "#ff3366", "#9aa0b4"],
   },
 ]
 

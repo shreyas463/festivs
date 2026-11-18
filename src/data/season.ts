@@ -41,8 +41,19 @@ const dated: Record<number, Mark[]> = {
   ],
 }
 
+function fourthThursdayNovember(year: number): { month: number; day: number } {
+  let thursdays = 0
+  for (let day = 1; day <= 30; day += 1) {
+    if (new Date(Date.UTC(year, 10, day)).getUTCDay() === 4) {
+      thursdays += 1
+      if (thursdays === 4) return { month: 11, day }
+    }
+  }
+  return { month: 11, day: 22 }
+}
+
 function marksFor(year: number): Mark[] {
-  return (
+  const base =
     dated[year] ?? [
       { festival: "newyear", month: 1, day: 1 },
       { festival: "lunar", month: 2, day: 10 },
@@ -51,7 +62,12 @@ function marksFor(year: number): Mark[] {
       { festival: "diwali", month: 11, day: 1 },
       { festival: "christmas", month: 12, day: 25 },
     ]
-  )
+  const thanks = fourthThursdayNovember(year)
+  return [
+    ...base,
+    { festival: "thanksgiving", month: thanks.month, day: thanks.day },
+    { festival: "blackfriday", month: thanks.month, day: thanks.day + 1 },
+  ]
 }
 
 function utcDay(year: number, month: number, day: number): number {

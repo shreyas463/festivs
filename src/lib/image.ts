@@ -79,14 +79,6 @@ export async function cardBlob(card: Card): Promise<Blob> {
   ctx.fillStyle = paper
   ctx.fillRect(0, 0, width, height)
 
-  ctx.strokeStyle = festival.gold
-  ctx.globalAlpha = 0.85
-  ctx.lineWidth = 3
-  ctx.beginPath()
-  ctx.arc(width - 86, height - 86, 18, 0, Math.PI * 2)
-  ctx.stroke()
-  ctx.globalAlpha = 1
-
   ctx.textAlign = "center"
   ctx.textBaseline = "middle"
   ctx.font = `italic ${fontSize}px Fraunces, Georgia, serif`
