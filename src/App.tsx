@@ -40,6 +40,14 @@ export default function App() {
     location.hash.length > 1 && cardFromAddress() === null ? "That link could not be opened." : "",
   )
   const helpRef = useRef<HTMLDialogElement>(null)
+  const [stuck, setStuck] = useState(false)
+
+  useEffect(() => {
+    const onScroll = () => setStuck(window.scrollY > 8)
+    onScroll()
+    window.addEventListener("scroll", onScroll, { passive: true })
+    return () => window.removeEventListener("scroll", onScroll)
+  }, [])
 
   useEffect(() => {
     if (!dirty) return
@@ -86,6 +94,14 @@ export default function App() {
     setCard(next)
   }
 
+  function makeCard() {
+    setReceive(false)
+    setOpen(false)
+    window.requestAnimationFrame(() => {
+      document.querySelector(".studio")?.scrollIntoView({ behavior: "smooth", block: "nearest" })
+    })
+  }
+
   function toggle() {
     if (open) {
       if (!receive) setOpen(false)
@@ -93,6 +109,19 @@ export default function App() {
     }
     setPlayId((value) => value + 1)
     setOpen(true)
+  }
+
+  function sendBack() {
+    const festival = festivalById(card.festival)
+    setDirty(true)
+    setReceive(false)
+    setOpen(false)
+    setCard((current) => ({
+      ...current,
+      to: current.from,
+      from: "",
+      message: festival.greeting,
+    }))
   }
 
   function replay() {
@@ -133,8 +162,13 @@ export default function App() {
 
   return (
     <div className="app" style={themeOf(card)}>
-      <Effects festival={festival.id} effects={["float"]} colors={festival.bits} ambient />
-      <header className="top">
+      <Effects
+        festival={festival.id}
+        effects={card.effects.includes("float") ? ["float"] : []}
+        colors={festival.bits}
+        ambient
+      />
+      <header className={stuck ? "top is-stuck" : "top"}>
         <div>
           <p className="mark">Holiday cards</p>
           <h1>Festivs</h1>
@@ -144,6 +178,9 @@ export default function App() {
             How it works
           </button>
           <a href="privacy.html">Privacy</a>
+          <button type="button" className="nav-cta" onClick={makeCard}>
+            Make a card
+          </button>
         </nav>
       </header>
       <dialog ref={helpRef} className="help">
@@ -158,24 +195,39 @@ export default function App() {
         </button>
       </dialog>
       <main className={receive ? "layout is-receive" : "layout"}>
+        {receive ? (
+          <ol className="steps">
+            <li>Write a note</li>
+            <li>Seal the card</li>
+            <li>Send the link</li>
+          </ol>
+        ) : null}
         <div className="stage-column">
           <CardStage card={card} open={open} playId={playId} canClose={!receive} onToggle={toggle} />
           {receive ? (
             <div className="receive-actions">
-              {open ? (
-                <button type="button" className="primary" onClick={replay}>
-                  Open again
-                </button>
-              ) : null}
+              <button type="button" className="primary" onClick={() => setReceive(false)}>
+                Make your own
+              </button>
               <button type="button" className="ghost" onClick={() => void save()}>
                 Save image
               </button>
-              <button type="button" className="ghost" onClick={() => setReceive(false)}>
-                Make your own
-              </button>
+              {open && card.from.trim() ? (
+                <button type="button" className="ghost" onClick={sendBack}>
+                  Send one back
+                </button>
+              ) : null}
+              {open ? (
+                <button type="button" className="ghost" onClick={replay}>
+                  Open again
+                </button>
+              ) : null}
               {saveNote ? <p className="fine">{saveNote}</p> : null}
             </div>
           ) : null}
+          <p className="colophon">
+            No sign-up · Messages stay in the link · <a href="privacy.html">Privacy</a>
+          </p>
         </div>
         {receive ? null : (
           <Studio
@@ -196,7 +248,6 @@ export default function App() {
           />
         )}
       </main>
-      <footer className="foot">No sign-up. Messages stay in the link.</footer>
       {copied ? <p className="toast" role="status">Link copied</p> : null}
       {linkNote ? (
         <p className="toast" role="status">

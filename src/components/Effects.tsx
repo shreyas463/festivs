@@ -24,6 +24,7 @@ type Particle = {
   spin: number
   color: string
   burst: boolean
+  layer: number
 }
 
 function pick(colors: readonly string[]): string {
@@ -78,16 +79,54 @@ function drawConfetti(ctx: CanvasRenderingContext2D, particle: Particle) {
   ctx.restore()
 }
 
+function drawMaple(ctx: CanvasRenderingContext2D, r: number) {
+  ctx.beginPath()
+  ctx.moveTo(0, -r)
+  ctx.lineTo(r * 0.28, -r * 0.42)
+  ctx.lineTo(r * 0.82, -r * 0.55)
+  ctx.lineTo(r * 0.48, -r * 0.05)
+  ctx.lineTo(r * 0.95, r * 0.08)
+  ctx.lineTo(r * 0.42, r * 0.28)
+  ctx.lineTo(r * 0.62, r * 0.78)
+  ctx.lineTo(r * 0.12, r * 0.42)
+  ctx.lineTo(0, r * 0.95)
+  ctx.lineTo(-r * 0.12, r * 0.42)
+  ctx.lineTo(-r * 0.62, r * 0.78)
+  ctx.lineTo(-r * 0.42, r * 0.28)
+  ctx.lineTo(-r * 0.95, r * 0.08)
+  ctx.lineTo(-r * 0.48, -r * 0.05)
+  ctx.lineTo(-r * 0.82, -r * 0.55)
+  ctx.lineTo(-r * 0.28, -r * 0.42)
+  ctx.closePath()
+  ctx.fill()
+}
+
+function drawWheat(ctx: CanvasRenderingContext2D, r: number) {
+  ctx.beginPath()
+  ctx.moveTo(0, r)
+  ctx.lineTo(0, -r)
+  ctx.stroke()
+  for (let i = 0; i < 4; i += 1) {
+    const y = -r * 0.85 + i * r * 0.38
+    ctx.beginPath()
+    ctx.ellipse(-r * 0.32, y, r * 0.16, r * 0.28, -0.5, 0, Math.PI * 2)
+    ctx.ellipse(r * 0.32, y, r * 0.16, r * 0.28, 0.5, 0, Math.PI * 2)
+    ctx.fill()
+  }
+}
+
 function drawFloat(ctx: CanvasRenderingContext2D, particle: Particle, festival: FestivalId) {
   ctx.save()
   ctx.translate(particle.x, particle.y)
   ctx.rotate(particle.rot)
-  ctx.globalAlpha = 0.35 + 0.55 * Math.sin((particle.life / particle.max) * Math.PI)
+  const near = particle.layer === 2
+  ctx.filter = near ? "blur(2.5px)" : "none"
+  ctx.globalAlpha = near ? 0.55 : particle.layer === 0 ? 0.95 : 0.9
   ctx.fillStyle = particle.color
   ctx.strokeStyle = particle.color
   ctx.shadowColor = particle.color
-  ctx.shadowBlur = 12
-  ctx.lineWidth = 1.6
+  ctx.shadowBlur = near ? 8 : 0
+  ctx.lineWidth = 1.4
   const r = particle.size
   if (festival === "christmas") {
     ctx.beginPath()
@@ -116,11 +155,8 @@ function drawFloat(ctx: CanvasRenderingContext2D, particle: Particle, festival: 
     ctx.arc(0, 0, r * 0.7, 0, Math.PI * 2)
     ctx.fill()
   } else if (festival === "thanksgiving") {
-    ctx.beginPath()
-    ctx.moveTo(0, -r)
-    ctx.bezierCurveTo(r * 0.7, -r * 0.2, r * 0.5, r * 0.9, 0, r)
-    ctx.bezierCurveTo(-r * 0.5, r * 0.9, -r * 0.7, -r * 0.2, 0, -r)
-    ctx.fill()
+    if (Math.round(particle.size) % 5 === 0) drawWheat(ctx, r)
+    else drawMaple(ctx, r)
   } else if (festival === "blackfriday") {
     ctx.strokeRect(-r * 0.55, -r * 0.35, r * 1.1, r * 0.7)
     ctx.beginPath()
@@ -134,6 +170,7 @@ function drawFloat(ctx: CanvasRenderingContext2D, particle: Particle, festival: 
     ctx.bezierCurveTo(-r * 0.55, r * 0.7, -r, -r * 0.2, 0, -r)
     ctx.fill()
   }
+  ctx.filter = "none"
   ctx.restore()
 }
 
@@ -183,8 +220,12 @@ export function Effects({ festival, effects, colors, ambient = false }: EffectsP
     const observer = new ResizeObserver(measure)
     observer.observe(document.documentElement)
 
+    const leafInk = ["#ffb15a", "#ff8a3d", "#e25b24", "#ffd27a", "#f08a32"]
     const spawn = (kind: Kind, burst: boolean) => {
-      const color = pick(colors)
+      const color =
+        kind === "float" && festival === "thanksgiving"
+          ? leafInk[Math.floor(Math.random() * leafInk.length)]
+          : pick(colors)
       const from = origin()
       if (kind === "confetti") {
         const angle = Math.random() * Math.PI * 2
@@ -202,23 +243,28 @@ export function Effects({ festival, effects, colors, ambient = false }: EffectsP
           spin: (Math.random() - 0.5) * 0.28,
           color,
           burst: true,
+          layer: 1,
         })
         return
       }
       if (kind === "float") {
+        const spot = ambient ? edgeSpot() : { x: from.x + (Math.random() - 0.5) * 80, y: from.y }
+        const layer = ambient ? 1 : 1
+        const size = layer === 2 ? 30 + Math.random() * 10 : layer === 0 ? 6 + Math.random() * 3 : 14 + Math.random() * 6
         particles.push({
           kind,
-          x: burst ? from.x + (Math.random() - 0.5) * 80 : Math.random() * width,
-          y: burst ? from.y : height + 20,
-          vx: (Math.random() - 0.5) * 1.1,
-          vy: burst ? -1.2 - Math.random() * 2.2 : -0.45 - Math.random() * 0.8,
+          x: spot.x,
+          y: spot.y,
+          vx: (Math.random() - 0.5) * 0.3,
+          vy: burst ? -1.2 - Math.random() * 2.2 : -0.18 - Math.random() * 0.32,
           life: burst ? 0 : Math.random() * 200,
-          max: 420,
-          size: 12 + Math.random() * 16,
+          max: 560,
+          size,
           rot: Math.random() * Math.PI,
-          spin: (Math.random() - 0.5) * 0.03,
+          spin: (Math.random() - 0.5) * 0.01,
           color,
           burst,
+          layer,
         })
         return
       }
@@ -237,6 +283,47 @@ export function Effects({ festival, effects, colors, ambient = false }: EffectsP
         spin: (Math.random() - 0.5) * (burst ? 0.2 : 0.05),
         color,
         burst,
+        layer: 1,
+      })
+    }
+
+    const edgeSpot = () => {
+      const card = origin()
+      const side = Math.random()
+      let x = Math.random() * width
+      let y = Math.random() * height
+      if (side < 0.7) {
+        x = Math.random() < 0.5 ? Math.random() * width * 0.24 : width * (0.76 + Math.random() * 0.24)
+        y = Math.random() * height
+      } else if (Math.random() < 0.5) {
+        y = Math.random() * height * 0.18
+      } else {
+        y = height * (0.82 + Math.random() * 0.18)
+      }
+      if (Math.abs(x - card.x) < 200 && y > card.y - 40 && y < card.y + 460) {
+        x = x < width / 2 ? width * 0.06 : width * 0.94
+      }
+      return { x, y }
+    }
+
+    const spawnLayer = (layer: number) => {
+      const ink = ["#ffb15a", "#ff8a3d", "#e25b24", "#ffd27a", "#f08a32"]
+      const spot = edgeSpot()
+      const size = layer === 2 ? 30 + Math.random() * 12 : layer === 0 ? 6 + Math.random() * 3 : 14 + Math.random() * 7
+      particles.push({
+        kind: "float",
+        x: spot.x,
+        y: spot.y,
+        vx: (Math.random() - 0.5) * 0.28,
+        vy: -0.16 - Math.random() * 0.3,
+        life: Math.random() * 200,
+        max: 560,
+        size,
+        rot: Math.random() * Math.PI,
+        spin: (Math.random() - 0.5) * 0.01,
+        color: festival === "thanksgiving" ? ink[Math.floor(Math.random() * ink.length)] ?? "#ffb15a" : pick(colors),
+        burst: false,
+        layer,
       })
     }
 
@@ -246,7 +333,8 @@ export function Effects({ festival, effects, colors, ambient = false }: EffectsP
       ctx.clearRect(0, 0, width, height)
       if (ambient) {
         if (particles.length === 0) {
-          for (let i = 0; i < 14; i += 1) spawn("float", false)
+          const plan = width < 760 ? [2, 1, 1, 1, 1, 0, 0, 0] : [2, 2, 2, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0]
+          for (const layer of plan) spawnLayer(layer)
         }
       } else if (elapsed > 280) {
         if (wantsSparkle && !sparkBurst) {
@@ -270,13 +358,17 @@ export function Effects({ festival, effects, colors, ambient = false }: EffectsP
         particle.life += 1
         particle.x += particle.vx
         particle.y += particle.vy
+        if (particle.kind === "float") {
+          particle.x += Math.sin((particle.life + particle.size * 12) * 0.025) * 0.55
+        }
         particle.rot += particle.spin
         if (particle.kind === "confetti") particle.vy += 0.08
         if (particle.life > particle.max || particle.y < -40 || particle.y > height + 40) {
           if (particle.burst || particle.kind === "confetti") particles.splice(i, 1)
           else if (particle.kind === "float") {
+            const spot = edgeSpot()
             particle.life = 0
-            particle.x = Math.random() * width
+            particle.x = spot.x
             particle.y = height + 16
           } else {
             const from = origin()
@@ -286,6 +378,9 @@ export function Effects({ festival, effects, colors, ambient = false }: EffectsP
           }
           continue
         }
+      }
+      const drawList = particles.slice().sort((a, b) => a.layer - b.layer)
+      for (const particle of drawList) {
         if (particle.kind === "sparkle") drawSparkle(ctx, particle)
         else if (particle.kind === "confetti") drawConfetti(ctx, particle)
         else drawFloat(ctx, particle, festival)

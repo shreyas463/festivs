@@ -46,7 +46,7 @@ export function CardStage({ card, open, playId, canClose, onToggle }: CardStageP
   const name = to || "you"
   const nameClass = name.length > 18 ? "cover-name is-long" : name.length > 10 ? "cover-name is-mid" : "cover-name"
   const signDelay = `${420 + message.split(/\s+/).filter(Boolean).length * 38 + 80}ms`
-  const particles = card.effects.some((effect) => effect === "sparkle" || effect === "confetti" || effect === "float")
+  const overlay = card.effects.filter((effect) => effect === "sparkle" || effect === "confetti")
   const glow = card.effects.includes("glow")
   const interactive = !open || canClose
   const className = open ? `card-hit is-open${glow ? " has-glow" : ""}` : "card-hit"
@@ -67,13 +67,48 @@ export function CardStage({ card, open, playId, canClose, onToggle }: CardStageP
             <span className="cover-art" aria-hidden="true">
               <Motif id={festival.id} />
             </span>
-            <span className="eyebrow">For</span>
-            <span className={nameClass}>{name}</span>
+            <span className="cover-copy">
+              <span className="eyebrow">For</span>
+              <span className={nameClass}>{name}</span>
+              {from ? <span className="from-line">With love, {from}</span> : null}
+              <span className="teaser">A note is waiting…</span>
+            </span>
           </span>
           <span className="cover-band">
             <span className="band-rule" aria-hidden="true" />
             <span className="festival-name">{festival.name}</span>
             <span className="band-rule" aria-hidden="true" />
+          </span>
+          <span className="wax" aria-hidden="true">
+            <svg viewBox="0 0 80 88">
+              <defs>
+                <radialGradient id="wax-fill" cx="32%" cy="28%" r="72%">
+                  <stop offset="0%" stopColor="#f0a06a" />
+                  <stop offset="42%" stopColor="#c4522a" />
+                  <stop offset="100%" stopColor="#6e2410" />
+                </radialGradient>
+                <clipPath id="wax-left">
+                  <rect x="0" y="0" width="40" height="88" />
+                </clipPath>
+                <clipPath id="wax-right">
+                  <rect x="40" y="0" width="40" height="88" />
+                </clipPath>
+              </defs>
+              {(["left", "right"] as const).map((side) => (
+                <g key={side} className={`wax-half is-${side}`} clipPath={`url(#wax-${side})`}>
+                  <path
+                    fill="url(#wax-fill)"
+                    d="M40 7c8 0 14 3 18 9 4 6 9 8 11 16 2 9-2 15 0 22-2 8-8 13-15 17-4 8-8 12-14 12s-10-4-14-12c-7-4-13-9-15-17-2-7-2-13 0-22 2-8 7-10 11-16 4-6 10-9 18-9z"
+                  />
+                  <ellipse cx="30" cy="20" rx="10" ry="7" fill="#fff" opacity="0.28" />
+                  <circle cx="40" cy="38" r="15" fill="none" stroke="#4a160c" strokeWidth="1.6" opacity="0.55" />
+                  <path
+                    fill="#f6d7bc"
+                    d="M40 26l1.6 3.4 3.4-.8-1.1 3.4L48 34l-3.4 1.3 1.1 3.4-3.4-.9L40 42l-1.6-3.2-3.4.9 1.1-3.4L32 34l3.6-1.4-1.1-3.4 3.4.8z"
+                  />
+                </g>
+              ))}
+            </svg>
           </span>
         </span>
       </span>
@@ -118,10 +153,13 @@ export function CardStage({ card, open, playId, canClose, onToggle }: CardStageP
         </div>
       )}
       {open && !canClose ? null : (
-        <p className="tap-hint">{open ? "Tap the card to close" : "Tap the card to open"}</p>
+        <p className="tap-hint">
+          {open ? null : <span className="hint-arrow" aria-hidden="true">↑</span>}
+          {open ? "Tap the card to close" : "Tap the seal to open"}
+        </p>
       )}
-      {open && particles ? (
-        <Effects key={playId} festival={festival.id} effects={card.effects} colors={festival.bits} />
+      {open && overlay.length > 0 ? (
+        <Effects key={playId} festival={festival.id} effects={overlay} colors={festival.bits} />
       ) : null}
     </div>
   )

@@ -22,19 +22,22 @@ export function Motif({ id }: MotifProps) {
   }
   if (id === "thanksgiving") {
     return (
-      <svg viewBox="0 0 64 64" aria-hidden="true">
-        <path
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.2"
-          strokeLinejoin="round"
-          d="M18 40c2-10 8-16 14-22c6 6 12 12 14 22c1 6-4 12-14 12S17 46 18 40z"
-        />
-        <path
-          fill="currentColor"
-          d="M30 18c-8-2-14-8-16-14c8 1 14 6 16 14zm4 0c8-2 14-8 16-14c-8 1-14 6-16 14z"
-        />
-        <path fill="currentColor" d="M29 42h6v10h-6z" />
+      <svg viewBox="0 0 200 88" aria-hidden="true">
+        <g fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round">
+          <path d="M30 74c16-40 42-58 70-58s54 18 70 58" />
+          <path d="M100 28v28" />
+          <path d="M100 36c-7-1-10-6-8-11M100 44c-8-1-11-7-8-12M100 52c-6-1-9-6-7-10" />
+          <path d="M100 36c7-1 10-6 8-11M100 44c8-1 11-7 8-12M100 52c6-1 9-6 7-10" />
+        </g>
+        <g fill="currentColor">
+          <path transform="translate(100 16) scale(1.05)" d="M0-8l1.8-3.4 3.8-1-1.2 3.8L9 0l-4 1.4 1.2 3.8-3.8-1L0 8l-1.8-3.6-3.8 1 1.2-3.8L-9 0l4-1.4-1.2-3.8 3.8 1z" />
+          <path transform="translate(74 28) rotate(-32) scale(0.9)" d="M0-8l1.8-3.4 3.8-1-1.2 3.8L9 0l-4 1.4 1.2 3.8-3.8-1L0 8l-1.8-3.6-3.8 1 1.2-3.8L-9 0l4-1.4-1.2-3.8 3.8 1z" />
+          <path transform="translate(126 28) rotate(32) scale(0.9)" d="M0-8l1.8-3.4 3.8-1-1.2 3.8L9 0l-4 1.4 1.2 3.8-3.8-1L0 8l-1.8-3.6-3.8 1 1.2-3.8L-9 0l4-1.4-1.2-3.8 3.8 1z" />
+          <path transform="translate(52 48) rotate(-58) scale(0.8)" d="M0-8l1.8-3.4 3.8-1-1.2 3.8L9 0l-4 1.4 1.2 3.8-3.8-1L0 8l-1.8-3.6-3.8 1 1.2-3.8L-9 0l4-1.4-1.2-3.8 3.8 1z" />
+          <path transform="translate(148 48) rotate(58) scale(0.8)" d="M0-8l1.8-3.4 3.8-1-1.2 3.8L9 0l-4 1.4 1.2 3.8-3.8-1L0 8l-1.8-3.6-3.8 1 1.2-3.8L-9 0l4-1.4-1.2-3.8 3.8 1z" />
+          <path transform="translate(36 68) rotate(-78) scale(0.68)" d="M0-8l1.8-3.4 3.8-1-1.2 3.8L9 0l-4 1.4 1.2 3.8-3.8-1L0 8l-1.8-3.6-3.8 1 1.2-3.8L-9 0l4-1.4-1.2-3.8 3.8 1z" />
+          <path transform="translate(164 68) rotate(78) scale(0.68)" d="M0-8l1.8-3.4 3.8-1-1.2 3.8L9 0l-4 1.4 1.2 3.8-3.8-1L0 8l-1.8-3.6-3.8 1 1.2-3.8L-9 0l4-1.4-1.2-3.8 3.8 1z" />
+        </g>
       </svg>
     )
   }
