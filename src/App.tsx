@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type CSSProperties } from "react"
 import { CardStage } from "./components/CardStage.tsx"
+import { Effects } from "./components/Effects.tsx"
 import { Studio } from "./components/Studio.tsx"
 import { festivalById } from "./data/festivals.ts"
 import { createDefaultCard, encodeCard, parseHash, type Card } from "./lib/card.ts"
@@ -17,6 +18,7 @@ function themeOf(card: Card): CSSProperties {
     "--cover-b": festival.coverB,
     "--night": festival.night,
     "--wash": festival.wash,
+    "--mist": festival.mist,
   } as CSSProperties
 }
 
@@ -34,6 +36,10 @@ export default function App() {
   const [copied, setCopied] = useState(false)
   const [saveNote, setSaveNote] = useState("")
   const [fallbackUrl, setFallbackUrl] = useState("")
+  const [linkNote, setLinkNote] = useState(() =>
+    location.hash.length > 1 && cardFromAddress() === null ? "That link could not be opened." : "",
+  )
+  const helpRef = useRef<HTMLDialogElement>(null)
 
   useEffect(() => {
     if (!dirty) return
@@ -122,15 +128,35 @@ export default function App() {
     }
   }
 
+  const festival = festivalById(card.festival)
+  const shareUrl = `${location.origin}${location.pathname}#${encodeCard(card)}`
+
   return (
     <div className="app" style={themeOf(card)}>
+      <Effects festival={festival.id} effects={["float"]} colors={festival.bits} ambient />
       <header className="top">
         <div>
+          <p className="mark">Holiday cards</p>
           <h1>Festivs</h1>
-          <p className="tag">A holiday card they can open.</p>
         </div>
-        <a href="privacy.html">Privacy</a>
+        <nav className="nav" aria-label="Site">
+          <button type="button" className="nav-btn" onClick={() => helpRef.current?.showModal()}>
+            How it works
+          </button>
+          <a href="privacy.html">Privacy</a>
+        </nav>
       </header>
+      <dialog ref={helpRef} className="help">
+        <h2>How it works</h2>
+        <ol>
+          <li>Pick a festival and write a note.</li>
+          <li>Open the card to see the effect.</li>
+          <li>Copy the link. There is no account, and the card stays in the address.</li>
+        </ol>
+        <button type="button" className="primary" onClick={() => helpRef.current?.close()}>
+          Close
+        </button>
+      </dialog>
       <main className={receive ? "layout is-receive" : "layout"}>
         <div className="stage-column">
           <CardStage card={card} open={open} playId={playId} canClose={!receive} onToggle={toggle} />
@@ -156,14 +182,30 @@ export default function App() {
             card={card}
             copied={copied}
             fallbackUrl={fallbackUrl}
+            shareUrl={shareUrl}
             onChange={update}
             onShare={() => void share()}
             onReplay={replay}
             onSave={() => void save()}
+            onPreview={() => {
+              setDirty(true)
+              setReceive(true)
+              setOpen(false)
+            }}
             saveNote={saveNote}
           />
         )}
       </main>
+      <footer className="foot">No sign-up. Messages stay in the link.</footer>
+      {copied ? <p className="toast" role="status">Link copied</p> : null}
+      {linkNote ? (
+        <p className="toast" role="status">
+          {linkNote}
+          <button type="button" className="toast-x" onClick={() => setLinkNote("")}>
+            Dismiss
+          </button>
+        </p>
+      ) : null}
     </div>
   )
 }

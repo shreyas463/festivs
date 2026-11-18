@@ -24,16 +24,17 @@ export function Motif({ id }: MotifProps) {
     return (
       <svg viewBox="0 0 64 64" aria-hidden="true">
         <path
-          fill="currentColor"
-          d="M32 6c-7 12-16 19-16 32a16 16 0 1 0 32 0c0-13-9-20-16-32z"
-        />
-        <path
           fill="none"
           stroke="currentColor"
           strokeWidth="2.2"
-          strokeLinecap="round"
-          d="M32 40v14M32 18v8"
+          strokeLinejoin="round"
+          d="M18 40c2-10 8-16 14-22c6 6 12 12 14 22c1 6-4 12-14 12S17 46 18 40z"
         />
+        <path
+          fill="currentColor"
+          d="M30 18c-8-2-14-8-16-14c8 1 14 6 16 14zm4 0c8-2 14-8 16-14c-8 1-14 6-16 14z"
+        />
+        <path fill="currentColor" d="M29 42h6v10h-6z" />
       </svg>
     )
   }
@@ -54,10 +55,8 @@ export function Motif({ id }: MotifProps) {
   if (id === "christmas") {
     return (
       <svg viewBox="0 0 64 64" aria-hidden="true">
-        <circle cx="32" cy="36" r="14" fill="none" stroke="currentColor" strokeWidth="2.4" />
-        <path d="M32 22v-8" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" />
-        <circle cx="32" cy="12" r="2.2" fill="currentColor" />
-        <path d="M24 36h16M32 28v16" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+        <path fill="currentColor" d="M32 6l10 16h-6l10 16H16l10-16h-6z" />
+        <path fill="currentColor" d="M28 38h8v12h-8z" />
       </svg>
     )
   }

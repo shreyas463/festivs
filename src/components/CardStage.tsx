@@ -1,4 +1,4 @@
-import type { CSSProperties } from "react"
+import type { CSSProperties, PointerEvent } from "react"
 import { festivalById } from "../data/festivals.ts"
 import { cleanLine, limits, shownMessage, type Card } from "../lib/card.ts"
 import { Effects } from "./Effects.tsx"
@@ -61,9 +61,12 @@ export function CardStage({ card, open, playId, canClose, onToggle }: CardStageP
         {from ? <span className="signoff">— {from}</span> : null}
       </span>
       <span className="lid">
-        <span className="face front">
-          <span className="cover-frame" aria-hidden="true" />
+        <span className="face front" data-festival={festival.id}>
           <span className="cover-body">
+            <span className="cover-frame" aria-hidden="true" />
+            <span className="cover-art" aria-hidden="true">
+              <Motif id={festival.id} />
+            </span>
             <span className="eyebrow">For</span>
             <span className={nameClass}>{name}</span>
           </span>
@@ -77,8 +80,26 @@ export function CardStage({ card, open, playId, canClose, onToggle }: CardStageP
     </span>
   )
 
+  function tilt(event: PointerEvent<HTMLDivElement>) {
+    if (open || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return
+    const rect = event.currentTarget.getBoundingClientRect()
+    const x = (event.clientX - rect.left) / rect.width - 0.5
+    const y = (event.clientY - rect.top) / rect.height - 0.5
+    event.currentTarget.style.setProperty("--tilt-x", `${(-y * 7).toFixed(2)}deg`)
+    event.currentTarget.style.setProperty("--tilt-y", `${(x * 9).toFixed(2)}deg`)
+  }
+
+  function untilt(event: PointerEvent<HTMLDivElement>) {
+    event.currentTarget.style.setProperty("--tilt-x", "0deg")
+    event.currentTarget.style.setProperty("--tilt-y", "0deg")
+  }
+
   return (
-    <div className={open ? "stage is-open" : "stage"}>
+    <div
+      className={open ? "stage is-open" : "stage"}
+      onPointerMove={tilt}
+      onPointerLeave={untilt}
+    >
       {interactive ? (
         <button
           type="button"

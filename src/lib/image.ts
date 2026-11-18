@@ -78,6 +78,11 @@ export async function cardBlob(card: Card): Promise<Blob> {
   paper.addColorStop(1, "#fffdf9")
   ctx.fillStyle = paper
   ctx.fillRect(0, 0, width, height)
+  const ribbon = ctx.createLinearGradient(0, 0, width, 0)
+  ribbon.addColorStop(0, festival.accent)
+  ribbon.addColorStop(1, festival.gold)
+  ctx.fillStyle = ribbon
+  ctx.fillRect(0, 0, width, 28)
 
   ctx.textAlign = "center"
   ctx.textBaseline = "middle"
